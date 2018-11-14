@@ -1,0 +1,84 @@
+---
+- name: This playbook needs to be executed on CentOS-7.X
+  hosts: all
+  become: yes
+  become_user: root
+  tasks:
+  - name: Installing Apache server
+    yum: 
+      name: httpd
+      state: latest
+       
+  - name: Creating Document root
+    file:
+      state: directory
+      path: /var/www/html/
+
+  - name: Creating website *.html file
+    copy:
+      content: <html> <h1> Welcome to my webserver...!!! </h1> </html>
+      dest: /var/www/html/index.html
+  
+  - name: Starting Apache server
+    service: 
+      name: httpd 
+      state: started
+       
+  - name: Installing EPEL repo
+    yum: 
+     name: epel-release
+     state: latest
+  - name: Installing pip
+    yum:
+      name:  python-pip
+      state: latest
+
+  - name: Installing docker
+    yum:
+      name: docker
+      state: latest
+
+  - name: Installing Docker-PY Required dependency for Ansible Docker module to manage containers.
+    pip:
+      name: docker-py     
+      state: latest
+  
+  - name: start docker service
+    service:
+      name: docker
+      state: started
+        
+  - name: Creating Document root
+    file:
+      state: directory
+      path: /var/www/html/
+
+  - name: Creating website *.html file
+    copy:
+      content: <html> <h1> Welcome to my webserver... </h1> </html>
+      dest: /var/www/html/index.html
+  
+  - name: Starting Apache server
+    service: 
+      name: httpd 
+      state: started
+
+  - name: Pull a docker image and ensure a Tomcat container is running
+    docker:
+      name: tomcat-server
+      state: started
+      image: tomcat
+      pull: missing
+      ports:
+          - "8080:8080" 
+      
+  - name: Print URL's to access container and website.
+    debug:
+      msg: 
+        - "Website http://localhost:8090"  
+        - "Access Tomcat container http://localhost:8080"
+
+
+     
+       
+         
